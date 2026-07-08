@@ -107,17 +107,17 @@ void MineSweeperGame::userDifficultySelection()
 	{
 		case (1):
 		{
-			setDifficulty(9, 9, 10); //easy difficulty
+			setDifficulty(9, 9, 10); //easy difficulty / row, col, mines
 			break;
 		}
 		case (2):
 		{
-			setDifficulty(16, 16, 40); //medium difficulty
+			setDifficulty(16, 16, 40); //medium difficulty / row, col, mines
 			break;
 		}
 		case (3):
 		{
-			setDifficulty(30, 16, 99); //hard difficulty
+			setDifficulty(30, 16, 99); //hard difficulty / row, col, mines
 			break;
 		}
 		default:
