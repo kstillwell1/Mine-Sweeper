@@ -13,15 +13,15 @@ private:
 	void allocateBoard(int row, int col, int mines);
 	void setMines(int mines);
 	void userDifficultySelection();
+	void setDifficulty(int rows, int cols, int mines);
 	void printBoard();
-	int checkAdjacentTiles(int row, int col);
 	void revealTiles(int row, int col);
+	int checkAdjacentTiles(int row, int col);
 	void userTurn();
 	bool checkWin();
 	void timedReveal();
-	void setDifficulty(int rows, int cols, int mines);
-public:
 
+public:
 	~MineSweeperGame();
 	void setNumRows(int rows);
 	int getNumRows();
