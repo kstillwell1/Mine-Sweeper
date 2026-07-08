@@ -24,14 +24,14 @@ void MineSweeperGame::setNumRows(int rows)
 	numRows = rows;
 }
 
-void MineSweeperGame::setNumCols(int cols)
-{
-	numCols = cols;
-}
-
 int MineSweeperGame::getNumRows()
 {
 	return numRows;
+}
+
+void MineSweeperGame::setNumCols(int cols)
+{
+	numCols = cols;
 }
 
 int MineSweeperGame::getNumCols()
@@ -47,28 +47,6 @@ void MineSweeperGame::setNumMines(int mineCount)
 int MineSweeperGame::getNumMines()
 {
 	return numMines;
-}
-
-void MineSweeperGame::setMines(int mines)
-{
-	srand(time(NULL));
-	int currSetMines = 0;
-	int row = 0, col = 0;
-	int maxRow = getNumRows();
-	int maxCol = getNumCols();
-
-	while (currSetMines != mines)
-	{
-		row = std::rand() % maxRow;
-		col = std::rand() % maxCol;
-
-		if (board.board[row][col].mine == false)
-		{
-			board.board[row][col].mine = true;
-			board.board[row][col].actionedTile = true;
-			currSetMines++;
-		}
-	}
 }
 
 void MineSweeperGame::allocateBoard(int row, int col, int mines)
@@ -91,6 +69,28 @@ void MineSweeperGame::allocateBoard(int row, int col, int mines)
 	}
 
 	setMines(mines);
+}
+
+void MineSweeperGame::setMines(int mines)
+{
+	srand(time(NULL));
+	int currSetMines = 0;
+	int row = 0, col = 0;
+	int maxRow = getNumRows();
+	int maxCol = getNumCols();
+
+	while (currSetMines != mines)
+	{
+		row = std::rand() % maxRow;
+		col = std::rand() % maxCol;
+
+		if (board.board[row][col].mine == false)
+		{
+			board.board[row][col].mine = true;
+			board.board[row][col].actionedTile = true;
+			currSetMines++;
+		}
+	}
 }
 
 void MineSweeperGame::userDifficultySelection()
