@@ -7,6 +7,8 @@ struct Tile
 	int adjacentBombs = 0;
 	bool actionedTile = false; //used for the checkwin function
 	bool hitMine = false;
+	// bool flag = false;
+	// bool isCursorOnTile = false;
 };
 
 struct Board
