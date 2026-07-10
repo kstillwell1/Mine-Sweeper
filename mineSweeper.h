@@ -21,6 +21,7 @@ private:
 	bool checkWin();
 	void timedReveal();
 
+
 public:
 	~MineSweeperGame();
 	void setNumRows(int rows);
