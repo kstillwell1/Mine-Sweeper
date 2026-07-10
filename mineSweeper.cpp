@@ -5,6 +5,10 @@
 #include <queue>
 #include <thread>
 #include <chrono>
+#include <cstdlib>
+
+const std::string RESET = "\033[0m";
+const std::string GREEN = "\033[32m";
 
 MineSweeperGame::~MineSweeperGame()
 {
@@ -107,17 +111,17 @@ void MineSweeperGame::userDifficultySelection()
 	{
 		case (1):
 		{
-			setDifficulty(9, 9, 10); //easy difficulty / row, col, mines
+			setDifficulty(9, 9, 10); //easy difficulty
 			break;
 		}
 		case (2):
 		{
-			setDifficulty(16, 16, 40); //medium difficulty / row, col, mines
+			setDifficulty(16, 16, 40); //medium difficulty
 			break;
 		}
 		case (3):
 		{
-			setDifficulty(30, 16, 99); //hard difficulty / row, col, mines
+			setDifficulty(30, 16, 99); //hard difficulty
 			break;
 		}
 		default:
@@ -138,6 +142,8 @@ void MineSweeperGame::setDifficulty(int rows, int cols, int mines)
 
 void MineSweeperGame::printBoard()
 {
+	system("cls");
+
 	double timeToReveal = 5.0 / numMines;
 	std::cout << "  | ";
 	for (int col = 0; col < numCols; ++col)
@@ -169,7 +175,7 @@ void MineSweeperGame::printBoard()
 			if (board.board[row][col].hitMine == true)
 			{
 				std::cout << "M";
-				std::this_thread::sleep_for(std::chrono::duration<double>(timeToReveal));
+				//std::this_thread::sleep_for(std::chrono::duration<double>(timeToReveal));
 			}
 			else if (gameEnd == true && board.board[row][col].mine == true)
 			{
@@ -183,9 +189,10 @@ void MineSweeperGame::printBoard()
 				}
 				else
 				{
-					std::cout << checkAdjacentTiles(row, col);
+					std::cout << GREEN << checkAdjacentTiles(row, col) << RESET;
 				}
 			}
+			// if iscursorontile, color changes
 			else
 			{
 				std::cout << "-";
