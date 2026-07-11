@@ -4,11 +4,11 @@ struct Tile
 {
 	bool revealed = false;
 	bool mine = false;
-	int adjacentBombs = 0;
+	int adjacentMines = 0;
 	bool actionedTile = false; //used for the checkwin function
-	bool hitMine = false;
+	bool userHitMine = false;
+	bool isCursorOnTile = false;
 	// bool flag = false;
-	// bool isCursorOnTile = false;
 };
 
 struct Board
