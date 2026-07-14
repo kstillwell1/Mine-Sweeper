@@ -217,9 +217,17 @@ void MineSweeperGame::printBoard()
 		{
 			if (board.board[row][col].revealed == true)
 			{
-				if (checkAdjacentTiles(row, col) == 0)
+				if (checkAdjacentTiles(row, col) == 0 && board.board[row][col].isCursorOnTile == true)
+				{
+					std::cout << BG_BRIGHT_WHITE << " " << RESET;
+				}
+				else if (checkAdjacentTiles(row, col) == 0)
 				{
 					std::cout << " ";
+				}
+				else if (board.board[row][col].isCursorOnTile == true)
+				{
+					std::cout << BG_BRIGHT_WHITE << setTileColor(row, col) << board.board[row][col].adjacentMines << RESET;
 				}
 				else
 				{
@@ -247,7 +255,7 @@ void MineSweeperGame::printBoard()
 			}
 			else if (board.board[row][col].isCursorOnTile == true)
 			{
-				std::cout << BRIGHT_YELLOW << "*" << RESET;
+				std::cout << BG_BRIGHT_WHITE << BLACK << "*" << RESET;
 			}
 			else
 			{
