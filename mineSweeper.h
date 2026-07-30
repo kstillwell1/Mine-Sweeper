@@ -6,11 +6,13 @@ class MineSweeperGame
 {
 private:
 	Board board;
+	bool playAgain = false;
 	bool gameEnd = false;
 	bool didUserWin = false;
 	int numRows = 0;
 	int numCols = 0;
 	int numMines = 0;
+
 
 	void allocateBoard(int row, int col, int mines);
 	void setMines(int mines);
@@ -23,11 +25,12 @@ private:
 	void userTurn();
 	bool checkWin();
 	std::pair<int, int> cursorMovement();
+	void postGameQuestions();
+	std::pair<int, int> getHitMine();
+	void BOOM();
+	void resetTilesFromBoom();
+	bool isTileInBounds(int row, int col);
 
-
-
-public:
-	~MineSweeperGame();
 	void setNumRows(int rows);
 	int getNumRows();
 	void setNumCols(int Cols);
@@ -35,6 +38,9 @@ public:
 	void setNumMines(int mineCount);
 	int getNumMines();
 	std::pair<int, int> getCurrentCoords();
+	int getFlagCount();
 
+public:
+	~MineSweeperGame();
 	void gameLoop();
 };
