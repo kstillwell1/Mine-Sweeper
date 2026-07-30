@@ -8,6 +8,14 @@
 #include <chrono>
 #include <cstdlib>
 #include <conio.h>
+#include <sstream>
+
+//add replayability - DONE
+//handle crash from seleting easy and then medium, start in allocate board and look at the way its being deleted - DONE
+//counter of flagged tiles - DONE
+//add explosion effect if you hit mine - DONE
+//show the difference between correct and incorrect flags made by user when game ends - DONE
+//add sounds
 
 MineSweeperGame::~MineSweeperGame()
 {
@@ -68,16 +76,6 @@ std::pair<int, int> MineSweeperGame::getCurrentCoords()
 
 void MineSweeperGame::allocateBoard(int row, int col, int mines)
 {
-	if (board.board != nullptr)
-	{
-		for (int i = 0; i < row; i++)
-		{
-			delete[] board.board[i];
-
-		}
-		delete[] board.board;
-	}
-
 	board.board = new Tile * [row];
 
 	for (int i = 0; i < row; i++)
@@ -134,7 +132,7 @@ void MineSweeperGame::userDifficultySelection()
 		}
 		case (3):
 		{
-			setDifficulty(30, 16, 99); //hard difficulty
+			setDifficulty(25, 25, 99); //hard difficulty
 			break;
 		}
 		default:
@@ -147,6 +145,16 @@ void MineSweeperGame::userDifficultySelection()
 
 void MineSweeperGame::setDifficulty(int rows, int cols, int mines)
 {
+	if (board.board != nullptr)
+	{
+		for (int i = 0; i < getNumRows(); i++)
+		{
+			delete[] board.board[i];
+
+		}
+		delete[] board.board;
+	}
+
 	setNumRows(rows);
 	setNumCols(cols);
 	setNumMines(mines);
@@ -166,7 +174,7 @@ std::string MineSweeperGame::setTileColor(int row, int col)
 		}
 		case (2):
 		{
-			return RED;
+			return BRIGHT_GREEN;
 			break;
 		}
 		case (3):
@@ -176,7 +184,7 @@ std::string MineSweeperGame::setTileColor(int row, int col)
 		}
 		case (4):
 		{
-			return BLUE;
+			return BRIGHT_BLUE;
 			break;
 		}
 		case (5):
@@ -206,64 +214,201 @@ std::string MineSweeperGame::setTileColor(int row, int col)
 	}
 }
 
+int MineSweeperGame::getFlagCount()
+{
+	int flagCount = 0;
+	for (int row = 0; row < numRows; row++)
+	{
+		for (int col = 0; col < numCols; col++)
+		{
+			if (board.board[row][col].flag == true)
+			{
+				flagCount++;
+			}
+		}
+	}
+	return flagCount;
+}
+
 void MineSweeperGame::printBoard()
 {
-	system("cls");
+	std::ostringstream oss;
+
+	oss << "\x1B[H"; // reposition cursor only, don't clear the whole screen
+
+	oss << "Use Arrow Keys to move, Enter to reveal, and F to flag a tile" << "\x1B[K\n";
+	oss << "\x1B[K\n"; // clear the blank line
+
+	oss << "Flag Counter" << "(" << RED << getFlagCount() << RESET << ")" << "\x1B[K\n";
+
+	oss << "\x1B[K\n";
+	oss << "\x1B[K\n";
 
 	for (int row = 0; row < numRows; ++row)
 	{
-		std::cout << "|";
+		oss << "\t|";
 		for (int col = 0; col < numCols; ++col)
 		{
-			if (board.board[row][col].revealed == true)
+			if (board.board[row][col].isExploding == true)
 			{
-				if (checkAdjacentTiles(row, col) == 0 && board.board[row][col].isCursorOnTile == true)
+				if (board.board[row][col].userHitMine == true)
 				{
-					std::cout << BG_BRIGHT_WHITE << " " << RESET;
-				}
-				else if (checkAdjacentTiles(row, col) == 0)
-				{
-					std::cout << " ";
-				}
-				else if (board.board[row][col].isCursorOnTile == true)
-				{
-					std::cout << BG_BRIGHT_WHITE << setTileColor(row, col) << board.board[row][col].adjacentMines << RESET;
+					oss << BRIGHT_RED << "M" << RESET;
 				}
 				else
 				{
-					std::cout << setTileColor(row, col) << board.board[row][col].adjacentMines << RESET;
+					oss << BRIGHT_MAGENTA << "X" << RESET;
+				}
+			}
+			else if (board.board[row][col].revealed == true)
+			{
+				if (checkAdjacentTiles(row, col) == 0 && board.board[row][col].isCursorOnTile == true)
+				{
+					oss << BG_BRIGHT_WHITE << " " << RESET;
+				}
+				else if (checkAdjacentTiles(row, col) == 0)
+				{
+					oss << " ";
+				}
+				else if (board.board[row][col].isCursorOnTile == true)
+				{
+					oss << BG_BRIGHT_WHITE << setTileColor(row, col) << board.board[row][col].adjacentMines << RESET;
+				}
+				else
+				{
+					oss << setTileColor(row, col) << board.board[row][col].adjacentMines << RESET;
 				}
 			}
 			else if (gameEnd == true)
 			{
 				if (didUserWin == true && board.board[row][col].mine == true)
 				{
-					std::cout << "F";
+					oss << RED << "F" << RESET;
 				}
 				else if (board.board[row][col].userHitMine == true)
 				{
-					std::cout << BRIGHT_RED << "M" << RESET;
+					oss << BRIGHT_RED << "M" << RESET;
+				}
+				else if (board.board[row][col].flag == true)
+				{
+					if (board.board[row][col].mine == false)
+					{
+						oss << WHITE << "F" << RESET;
+					}
+					else
+					{
+						oss << RED << "F" << RESET;
+					}
 				}
 				else if (board.board[row][col].mine == true)
 				{
-					std::cout << "M";
+					oss << "M";
 				}
 				else
 				{
-					std::cout << "-";
+					oss << "-";
+				}
+			}
+			else if (board.board[row][col].flag == true)
+			{
+				if (board.board[row][col].isCursorOnTile == true)
+				{
+					oss << BG_BRIGHT_WHITE << RED << "F" << RESET;
+				}
+				else
+				{
+					oss << RED << "F" << RESET;
 				}
 			}
 			else if (board.board[row][col].isCursorOnTile == true)
 			{
-				std::cout << BG_BRIGHT_WHITE << BLACK << "*" << RESET;
+				oss << BG_BRIGHT_WHITE << BLACK << "*" << RESET;
 			}
 			else
 			{
-				std::cout << "-";
+				oss << "-";
 			}
-			std::cout << "|";
+			oss << "|";
 		}
-		std::cout << "\n";
+		oss << "\x1B[K" << "\n";
+	}
+	oss << "\x1B[J";
+
+	std::cout << oss.str();
+	std::cout.flush();
+}
+
+std::pair<int, int> MineSweeperGame::getHitMine()
+{
+	for (int row = 0; row < numRows; row++)
+	{
+		for (int col = 0; col < numCols; col++)
+		{
+			if (board.board[row][col].userHitMine == true)
+			{
+				return { row, col };
+			}
+		}
+	}
+}
+
+bool MineSweeperGame::isTileInBounds(int row, int col)
+{
+	if (row < 0 || row >= numRows || col < 0 || col >= numCols)
+	{
+		return false;
+	}
+	return true;
+}
+
+void MineSweeperGame::BOOM()
+{
+	std::queue<std::pair<int, int>> tileBoomQueue;
+	tileBoomQueue.push({ getHitMine().first, getHitMine().second });
+	while (!tileBoomQueue.empty())
+	{
+		std::pair<int, int> current = tileBoomQueue.front();
+
+		tileBoomQueue.pop();
+
+		int r = current.first, c = current.second;
+
+		if (isTileInBounds(r - 1, c) && board.board[r - 1][c].isExploding != true)
+		{
+			board.board[r - 1][c].isExploding = true;
+			tileBoomQueue.push({ r - 1, c }); //up
+		}
+		if (isTileInBounds(r, c + 1) && board.board[r][c + 1].isExploding != true)
+		{
+			board.board[r][c + 1].isExploding = true;
+			tileBoomQueue.push({ r, c + 1 }); //right
+		}
+		if (isTileInBounds(r + 1, c) && board.board[r + 1][c].isExploding != true)
+		{
+			board.board[r + 1][c].isExploding = true;
+			tileBoomQueue.push({ r + 1, c }); //down
+		}
+		if (isTileInBounds(r, c - 1) && board.board[r][c - 1].isExploding != true)
+		{
+			board.board[r][c - 1].isExploding = true;
+			tileBoomQueue.push({ r, c - 1 }); //left
+		}
+
+		printBoard();
+		std::this_thread::sleep_for(std::chrono::milliseconds(15));
+	}
+	resetTilesFromBoom();
+	printBoard();
+}
+
+void MineSweeperGame::resetTilesFromBoom()
+{
+	for (int row = 0; row < numRows; row++)
+	{
+		for (int col = 0; col < numCols; col++)
+		{
+			board.board[row][col].isExploding = false;
+		}
 	}
 }
 
@@ -347,7 +492,21 @@ std::pair<int, int> MineSweeperGame::cursorMovement()
 
 		if (key == 13) // Enter
 		{
+			if (board.board[getCurrentCoords().first][getCurrentCoords().second].flag == true)
+			{
+				continue;
+			}
 			break;
+		}
+
+		if (key == 'f' || key == 'F')
+		{
+			if (board.board[getCurrentCoords().first][getCurrentCoords().second].revealed == false)
+			{
+				board.board[getCurrentCoords().first][getCurrentCoords().second].flag = !(board.board[getCurrentCoords().first][getCurrentCoords().second].flag);
+				printBoard();
+			}
+			continue;
 		}
 
 		if (key == 0 || key == 224)
@@ -416,6 +575,7 @@ void MineSweeperGame::userTurn()
 	else if (board.board[myCoords.first][myCoords.second].mine == true)
 	{
 		board.board[myCoords.first][myCoords.second].userHitMine = true;
+
 		gameEnd = true;
 		std::cout << "You hit a mine " << std::endl;
 	}
@@ -438,24 +598,52 @@ bool MineSweeperGame::checkWin()
 	return true;
 }
 
+void MineSweeperGame::postGameQuestions()
+{
+	char answer;
+	std::cout << std::endl;
+	std::cout << "Would you like to play again? (y/n): \n";
+	std::cin >> answer;
+	if (answer == 'y' || answer == 'Y')
+	{
+		gameEnd = false;
+		return;
+	}
+	else if (answer == 'n' || answer == 'N')
+	{
+		playAgain = true;
+	}
+	else
+	{
+		std::cout << "Answer not valid, try again \n";
+		postGameQuestions();
+	}
+}
+
 void MineSweeperGame::gameLoop()
 {
-	userDifficultySelection();
-	board.board[0][0].isCursorOnTile = true;
-	while (gameEnd != true)
+	while (!playAgain)
 	{
-		printBoard();
-		userTurn();
-		if (gameEnd == true)
+		userDifficultySelection();
+		board.board[0][0].isCursorOnTile = true;
+		while (gameEnd != true)
 		{
 			printBoard();
-			break;
+			userTurn();
+			if (gameEnd == true)
+			{
+				printBoard();
+
+				BOOM();
+				break;
+			}
+			if (checkWin())
+			{
+				gameEnd = true;
+				printBoard();
+				std::cout << "Congrats on your win" << std::endl;
+			}
 		}
-		if (checkWin())
-		{
-			gameEnd = true;
-			printBoard();
-			std::cout << "Congrats on your win" << std::endl;
-		}
+		postGameQuestions();
 	}
 }
