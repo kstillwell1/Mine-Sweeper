@@ -25,5 +25,5 @@ const std::string BRIGHT_CYAN = "\033[96m";
 const std::string BRIGHT_WHITE = "\033[97m";
 
 // Background colors
-const std::string BG_BRIGHT_WHITE = "\033[107m";
+const std::string BG_BRIGHT_WHITE = "\033[47m";
 const std::string FG_BLACK = "\033[30m";
