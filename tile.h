@@ -8,7 +8,8 @@ struct Tile
 	bool actionedTile = false; //used for the checkwin function
 	bool userHitMine = false;
 	bool isCursorOnTile = false;
-	// bool flag = false;
+	bool flag = false;
+	bool isExploding = false; // changing the character for explosion effect
 };
 
 struct Board
