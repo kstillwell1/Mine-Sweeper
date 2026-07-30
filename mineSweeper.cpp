@@ -289,6 +289,10 @@ void MineSweeperGame::printBoard()
 				{
 					oss << BRIGHT_RED << "M" << RESET;
 				}
+				else if (board.board[row][col].mine == true)
+				{
+					oss << "M";
+				}
 				else if (board.board[row][col].flag == true)
 				{
 					if (board.board[row][col].mine == false)
@@ -299,10 +303,6 @@ void MineSweeperGame::printBoard()
 					{
 						oss << RED << "F" << RESET;
 					}
-				}
-				else if (board.board[row][col].mine == true)
-				{
-					oss << "M";
 				}
 				else
 				{
