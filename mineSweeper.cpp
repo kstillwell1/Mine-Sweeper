@@ -297,11 +297,11 @@ void MineSweeperGame::printBoard()
 					}
 					else if (board.board[row][col].mine == true)
 					{
-						oss << "M";
+						oss << RED << "F" << RESET;
 					}
 					else
 					{
-						oss << RED << "F" << RESET;
+						oss << "M";
 					}
 				}
 				else if (board.board[row][col].mine == true)
